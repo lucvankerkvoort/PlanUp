@@ -10,8 +10,8 @@ const Header = ({installable,handleInstall,user}) => {
     }
     return (
         <div className="header">
-            {installable?<Button color='primary' disableElevation='true' size='small' variant='contained' onClick={handleInstall}>Install</Button>:<></>}
-            {user?<Button color='secondary' disableElevation='true' size='small' variant='contained' onClick={handleLogout}>Logout</Button>:<p>Login to view</p>}
+            {installable?<Button color='primary' disableElevation size='small' variant='contained' onClick={handleInstall}>Install</Button>:<></>}
+            {user?<Button color='secondary' disableElevation size='small' variant='contained' onClick={handleLogout}>Logout</Button>:<p>Login to view</p>}
         </div>
     )
 }
