@@ -1,5 +1,7 @@
 import React,{useState} from 'react'
 import {auth} from "../../firebase";
+import { Button } from '@material-ui/core'
+import './Login.css'
 
 const Login = () => {
     const [email,setEmail]=useState("");
@@ -22,7 +24,9 @@ const Login = () => {
 
     }
     return (
-        <div>
+        <div className='login'>
+            <div className='form'>
+
             <h5>E-mail</h5>
                     <input
                     type="email"
@@ -35,8 +39,12 @@ const Login = () => {
                     value={password}
                     onChange={(e)=>setPassword(e.target.value)}
                     />
-                    <button className="login-sign-in-button" onClick={signIn}>Sign in</button>
-                    <button className="login-sign-up-button" onClick={register}>Register</button>
+                    <div className='login-buttons'>
+
+                    <Button color='primary' fullWidth disableElevation size='small' variant='contained'  onClick={signIn}>Sign in</Button>
+                    <Button color='primary' fullWidth disableElevation size='small' variant='contained'  onClick={register}>Register</Button>
+                    </div>
+            </div>
         </div>
     )
 }
