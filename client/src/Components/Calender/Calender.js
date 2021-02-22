@@ -5,23 +5,24 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import "./Calender.css";
 import EventModal from './Modal/EventModal'
+import CreateEventModal from './Modal/CreateEventModal'
 import { eventAdd, eventChange } from './eventfunctions'
 
 const Calender = ({currentEvents}) => {
   
   const [selectedEvent, setSelectedEvent] = useState({});
   const [weekendsVisible, setWeekendsVisible] = useState(true);
+  const [selectedInfo,setSelectedInfo]=useState(undefined)
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
 
   const handleDateSelect = (selectInfo) => {
-    let title = prompt('Please enter a new title for your event')
+    
+    setOpen2(true)
     let calendarApi = selectInfo.view.calendar
-
+  setSelectedInfo(selectInfo)
     calendarApi.unselect() // clear date selection
 
-    if (title) {
-      eventAdd(title, selectInfo)
-    }
   }
    
   const handleEventClick = (clickInfo) => {
@@ -36,6 +37,7 @@ const Calender = ({currentEvents}) => {
 
   return (
     <div className="calender-app">
+      <CreateEventModal open={open2} eventAdd={eventAdd} selectedInfo={selectedInfo} setOpen={setOpen2}/>
       <EventModal open={open} selectedEvent={selectedEvent} setOpen={setOpen} />
       <div className="calender-main">
         <FullCalendar

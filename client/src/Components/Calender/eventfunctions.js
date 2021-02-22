@@ -1,12 +1,14 @@
 import {db} from '../../firebase'
 
-export const eventAdd=(title,selectInfo)=>{
+export const eventAdd=(title,selectInfo,color)=>{
     db.collection('events')
     .add({
         title,
         start: selectInfo.startStr,
         end: selectInfo.endStr,
         allDay: selectInfo.allDay,
+        backgroundColor:color,
+        borderColor:color
     }).then(
       res=>{
         db.collection('events')
@@ -17,6 +19,8 @@ export const eventAdd=(title,selectInfo)=>{
         start: selectInfo.startStr,
         end: selectInfo.endStr,
         allDay: selectInfo.allDay,
+        backgroundColor:color,
+        borderColor:color
         })
       }
     )
@@ -31,6 +35,8 @@ export const eventChange=(changedInfo)=>{
             start: changedInfo.event.startStr,
             end: changedInfo.event.endStr,
             allDay: changedInfo.event.allDay,
+            backgroundColor:changedInfo.event.backgroundColor,
+            borderColor:changedInfo.event.borderColor
           })
 }
 
