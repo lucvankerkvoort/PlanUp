@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Modal, Button } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
-
+import { eventRemove } from '../eventfunctions'
 
 function getModalStyle() {
     const top = 50;
@@ -39,7 +39,7 @@ const EventModal = ({open,setOpen,selectedEvent}) => {
                
                     <p>Start:{selectedEvent.startStr}</p>
                 <Button color='secondary' disableElevation size='small' variant='contained' onClick={()=>{
-                    selectedEvent.remove()
+                    eventRemove(selectedEvent.id)
                     setOpen(false)
                 }}>Delete</Button>
             </div>
