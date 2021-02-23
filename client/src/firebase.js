@@ -1,13 +1,14 @@
 import firebase from "firebase";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAu23g6dO5DZQfO2Ke8Ywxz7glPxWCu-2w",
-  authDomain: "planup-d79a0.firebaseapp.com",
-  projectId: "planup-d79a0",
-  storageBucket: "planup-d79a0.appspot.com",
-  messagingSenderId: "422174048824",
-  appId: "1:422174048824:web:6c031ff1ee5c0beb625ccd",
-  measurementId: "G-FR3K9D10LQ"
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_DATABASE_URL,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 
 const firebaseApp=firebase.initializeApp(firebaseConfig);

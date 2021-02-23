@@ -3,47 +3,42 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { INITIAL_EVENTS, createEventId } from './event-utils'
 import "./Calender.css";
 import EventModal from './Modal/EventModal'
+import CreateEventModal from './Modal/CreateEventModal'
+import { eventAdd, eventChange } from './eventfunctions'
 
-
-const Calender = () => {
-  const [currentEvents, setCurrentEvents] = useState([]);
+const Calender = ({currentEvents}) => {
+  
   const [selectedEvent, setSelectedEvent] = useState({});
   const [weekendsVisible, setWeekendsVisible] = useState(true);
+  const [selectedInfo,setSelectedInfo]=useState(undefined)
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
 
   const handleDateSelect = (selectInfo) => {
-    let title = prompt('Please enter a new title for your event')
+    
+    setOpen2(true)
     let calendarApi = selectInfo.view.calendar
-
+  setSelectedInfo(selectInfo)
     calendarApi.unselect() // clear date selection
 
-    if (title) {
-      calendarApi.addEvent({
-        id: createEventId(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay,
-      })
-    }
   }
-
+   
   const handleEventClick = (clickInfo) => {
-   setOpen(true)
-   setSelectedEvent(clickInfo.event)
+    setOpen(true)
+    setSelectedEvent(clickInfo.event)
   }
 
-  const handleEvents = (events) => {
-    setCurrentEvents(events)
+
+  const handleEventChange = (changedInfo) => {
+    eventChange(changedInfo)
   }
-  
+
   return (
-    <div style={{ height: "100vh" }} className="calender-app">
-      <EventModal open={open} selectedEvent={selectedEvent} setOpen={setOpen}/> 
-
+    <div className="calender-app">
+      <CreateEventModal open={open2} eventAdd={eventAdd} selectedInfo={selectedInfo} setOpen={setOpen2}/>
+      <EventModal open={open} selectedEvent={selectedEvent} setOpen={setOpen} />
       <div className="calender-main">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -58,16 +53,10 @@ const Calender = () => {
           selectMirror={true}
           dayMaxEvents={true}
           weekends={weekendsVisible}
-          initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
+          events={currentEvents}
           select={handleDateSelect}
-          //   eventContent={renderEventContent} // custom render function
           eventClick={handleEventClick}
-          eventsSet={handleEvents} // called after events are initialized/added/changed/removed
-        /* you can update a remote database when these fire:
-        eventAdd={function(){}}
-        eventChange={function(){}}
-        eventRemove={function(){}}
-        */
+          eventChange={handleEventChange}
         />
       </div>
     </div>
