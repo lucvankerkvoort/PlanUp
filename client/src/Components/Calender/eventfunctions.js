@@ -1,7 +1,9 @@
 import {db} from '../../firebase'
 
-export const eventAdd=(title,selectInfo,color)=>{
-    db.collection('events')
+export const eventAdd=(title,selectInfo,color,user)=>{
+    db.collection('users')
+    .doc(user.uid)
+    .collection('events')
     .add({
         title,
         start: selectInfo.startStr,
@@ -11,7 +13,9 @@ export const eventAdd=(title,selectInfo,color)=>{
         borderColor:color
     }).then(
       res=>{
-        db.collection('events')
+        db.collection('users')
+        .doc(user.uid)
+        .collection('events')    
         .doc(res.id)
         .set({
           id:res.id,
@@ -26,8 +30,10 @@ export const eventAdd=(title,selectInfo,color)=>{
     )
 }
 
-export const eventChange=(changedInfo)=>{
-    db.collection('events')
+export const eventChange=(changedInfo,user)=>{
+    db.collection('users')
+    .doc(user.uid)
+    .collection('events')
     .doc(changedInfo.event.id)
     .set({
             id:changedInfo.event.id,
@@ -40,7 +46,9 @@ export const eventChange=(changedInfo)=>{
           })
 }
 
-export const eventRemove=(id)=>{
-    db.collection('events')
+export const eventRemove=(id,user)=>{
+    db.collection('users')
+    .doc(user.uid)
+    .collection('events')
     .doc(id).delete()
 }

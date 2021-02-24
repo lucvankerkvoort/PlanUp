@@ -8,23 +8,24 @@ import EventModal from './Modal/EventModal'
 import CreateEventModal from './Modal/CreateEventModal'
 import { eventAdd, eventChange } from './eventfunctions'
 
-const Calender = ({currentEvents}) => {
-  
+
+const Calender = ({ currentEvents, user,view }) => {
   const [selectedEvent, setSelectedEvent] = useState({});
+  // eslint-disable-next-line
   const [weekendsVisible, setWeekendsVisible] = useState(true);
-  const [selectedInfo,setSelectedInfo]=useState(undefined)
+  const [selectedInfo, setSelectedInfo] = useState(undefined)
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
 
   const handleDateSelect = (selectInfo) => {
-    
+
     setOpen2(true)
     let calendarApi = selectInfo.view.calendar
-  setSelectedInfo(selectInfo)
+    setSelectedInfo(selectInfo)
     calendarApi.unselect() // clear date selection
 
   }
-   
+
   const handleEventClick = (clickInfo) => {
     setOpen(true)
     setSelectedEvent(clickInfo.event)
@@ -32,24 +33,34 @@ const Calender = ({currentEvents}) => {
 
 
   const handleEventChange = (changedInfo) => {
-    eventChange(changedInfo)
+    eventChange(changedInfo, user)
   }
 
   return (
     <div className="calender-app">
-      <CreateEventModal open={open2} eventAdd={eventAdd} selectedInfo={selectedInfo} setOpen={setOpen2}/>
-      <EventModal open={open} selectedEvent={selectedEvent} setOpen={setOpen} />
+      <CreateEventModal open={open2} user={user} eventAdd={eventAdd} selectedInfo={selectedInfo} setOpen={setOpen2} />
+      <EventModal open={open} user={user} selectedEvent={selectedEvent} setOpen={setOpen} />
       <div className="calender-main">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          contentHeight={600}
+          selectLongPressDelay={1000}
           headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            left:'title prev next',
+            center: '',
+            end: 'today'
           }}
-          initialView='dayGridMonth'
+          buttonText={{
+            today:    'Today'
+          }}
+          initialView={view}
+          titleFormat={{ // will produce something like "Tuesday, September 18, 2018"
+            month: 'short',
+            year: 'numeric',
+          }}
           editable={true}
           selectable={true}
+          fo
           selectMirror={true}
           dayMaxEvents={true}
           weekends={weekendsVisible}

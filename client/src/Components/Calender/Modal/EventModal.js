@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 
-const EventModal = ({ open, setOpen, selectedEvent }) => {
+const EventModal = ({ open, setOpen, selectedEvent,user }) => {
     const classes = useStyles();
 
     const [modalStyle] = React.useState(getModalStyle);
@@ -47,7 +47,7 @@ const EventModal = ({ open, setOpen, selectedEvent }) => {
                 <p>{selectedEvent.allDay ? "All Day Event":""}</p>
 
                 <Button color='secondary' disableElevation size='small' variant='contained' onClick={() => {
-                    eventRemove(selectedEvent.id)
+                    eventRemove(selectedEvent.id,user)
                     setOpen(false)
                 }}>Delete</Button>
             </div>

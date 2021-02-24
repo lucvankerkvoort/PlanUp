@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-const CreateEventModal = ({ open, setOpen, selectedInfo,eventAdd }) => {
+const CreateEventModal = ({ open, setOpen, selectedInfo,eventAdd,user }) => {
     const classes = useStyles()
     const [modalStyle] = useState(getModalStyle)
     const [title, setTitle] = useState("")
@@ -110,7 +110,7 @@ const CreateEventModal = ({ open, setOpen, selectedInfo,eventAdd }) => {
                     <Button color='secondary' disableElevation size='small' variant='contained' onClick={() => {
                         if(title){
                             
-                            eventAdd(title,selectedInfo,selectedValue)
+                            eventAdd(title,selectedInfo,selectedValue,user)
                             setOpen(false)
                             setSelectedValue("default")
                             setTitle('')
