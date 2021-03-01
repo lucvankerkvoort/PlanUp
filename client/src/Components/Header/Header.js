@@ -14,7 +14,12 @@ const Header = ({ installable, handleInstall, user }) => {
         <div className="header">
             <div>
                 {installable ? <Button color='primary' disableElevation size='small' variant='contained' onClick={handleInstall}>Install</Button> : <></>}
-                {user ? <Button color='secondary' disableElevation size='small' variant='contained' onClick={handleLogout}>Logout</Button> : <p>Login to view</p>}
+                {user ? <>
+                    <Button color='secondary' disableElevation size='small' variant='contained' onClick={handleLogout}>Logout</Button> 
+                    <Button color='primary' disableElevation size='small' variant='contained' onClick={() => history.push('tasks')}>Tasks</Button>
+                </>
+                : <p>Login to view</p>}
+            
             </div>
             <div>
                 <Event style={{marginLeft:"3px"}} onClick={() => history.push('month-view')} color="primary" />

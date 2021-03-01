@@ -1,8 +1,10 @@
-import React from 'react'
+import React,{useState} from 'react'
 import { Modal, Button } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
 import { eventRemove } from '../eventfunctions'
 import Moment from 'react-moment';
+import axios from '../../../axios';
+import {useHistory} from 'react-router-dom'
 
 function getModalStyle() {
     const top = 50;
@@ -26,8 +28,23 @@ const useStyles = makeStyles((theme) => ({
 
 
 const EventModal = ({ open, setOpen, selectedEvent,user }) => {
-    const classes = useStyles();
+    const classes = useStyles()
+    const [loading,setLoading]=useState(false)
+    const history=useHistory()
 
+    const handleTrack=async ()=>{
+        setLoading(true)
+        await axios({
+            method:'post',
+            url:'/tasks',
+            data: {
+                uid:user?.uid,
+                eventId:selectedEvent?.id
+              }
+        })
+        setLoading(false)
+        history.push(`/task?taskId=${selectedEvent?.id}`)
+    }
     const [modalStyle] = React.useState(getModalStyle);
     return (
 
@@ -46,10 +63,15 @@ const EventModal = ({ open, setOpen, selectedEvent,user }) => {
 
                 <p>{selectedEvent.allDay ? "All Day Event":""}</p>
 
-                <Button color='secondary' disableElevation size='small' variant='contained' onClick={() => {
+                <Button color='secondary' disabled={loading} disableElevation size='small' variant='contained' onClick={() => {
+                    setLoading(true)
                     eventRemove(selectedEvent.id,user)
+                    setLoading(false)
                     setOpen(false)
                 }}>Delete</Button>
+                
+                <Button color='secondary'disabled={loading} disableElevation size='small' variant='contained' onClick={handleTrack}>Track</Button>
+
             </div>
         </Modal>
 
