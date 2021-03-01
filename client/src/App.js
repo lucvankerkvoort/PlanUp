@@ -9,12 +9,16 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import MonthView from './Components/Calender/MonthView/MonthView'
 import DayView from './Components/Calender/DayView/DayView'
 import WeekView from './Components/Calender/WeekView/WeekView'
+import Tasks from './Components/Task/Tasks'
+import Task from './Components/Task/Task'
 
 function App() {
   const [{ user }, dispatch] = useStateValue();
   const [installable, setInstallable] = useState(false);
   const [currentEvents, setCurrentEvents] = useState([]);
   const [loadingCalender, setLoadingCalender] = useState(false);
+  const [currentTasks, setCurrentTasks] = useState([])
+  const [loadingTasks, setLoadingTasks] = useState(false)
 
   useEffect(() => {
     auth.onAuthStateChanged(authUser => {
@@ -53,21 +57,28 @@ function App() {
     }
   }, [user])
 
-
+  useEffect(() => {
+    setLoadingTasks(false)
+    if (user) {
+      db.collection('users')
+        .doc(user.uid)
+        .collection('tasks')
+        .onSnapshot((snapshot => {
+          setCurrentTasks(snapshot.docs.map(
+            doc => doc.data()
+          ))
+          setLoadingTasks(true)
+        }))
+    }
+  }, [user])
   const handleInstall = () => {
     const promptEvent = window.deferredPrompt;
     if (!promptEvent) {
-      // The deferred prompt isn't available.
       return;
     }
-    // Show the install prompt.
     promptEvent.prompt();
-    // Log the result
     promptEvent.userChoice.then((result) => {
-      // Reset the deferred prompt variable, since
-      // prompt() can only be called once.
       window.deferredPrompt = null;
-      // Hide the install button.
       setInstallable(false)
     });
 
@@ -77,16 +88,18 @@ function App() {
     <div className="App">
       {user ? <>
         {loadingCalender ?
-        <Router>
-          <Header user={user} installable={installable} handleInstall={handleInstall} />
-          <Switch>
-            <Route exact path="/" render={()=><MonthView user={user} currentEvents={currentEvents} />}/>
-            <Route exact path="/month-view" render={()=><MonthView user={user} currentEvents={currentEvents} />}/>
-            <Route exact path="/day-view" render={()=><DayView user={user} currentEvents={currentEvents} />}/>
-            <Route exact path="/week-view" render={()=><WeekView user={user} currentEvents={currentEvents} />}/>
-          </Switch>
-        </Router> 
-         : <CircularProgress />}</> : <Login />}
+          <Router>
+            <Header user={user} installable={installable} handleInstall={handleInstall} />
+            <Switch>
+              <Route exact path="/" render={() => <MonthView user={user} currentEvents={currentEvents} />} />
+              <Route exact path="/month-view" render={() => <MonthView user={user} currentEvents={currentEvents} />} />
+              <Route exact path="/day-view" render={() => <DayView user={user} currentEvents={currentEvents} />} />
+              <Route exact path="/week-view" render={() => <WeekView user={user} currentEvents={currentEvents} />} />
+              <Route exact path="/tasks" render={() => <Tasks tasks={currentTasks} user={user} />} />
+              <Route exact path="/task" render={() => <Task tasks={currentTasks } user={user} />} />
+            </Switch>
+          </Router>
+          : <CircularProgress />}</> : <Login />}
     </div>
   );
 }

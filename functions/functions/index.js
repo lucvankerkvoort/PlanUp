@@ -100,17 +100,18 @@ app.post('/tasks/milestone/start', async (request, response) => {
             })
 
         if (milestone && milestone.running === false && milestone.complete === false) {
-            await db.collection(`users/${uid}/tasks/${taskId}/milestone/${milestoneId}/timesheet`)
+            const currentTimesheet = await db.collection(`users/${uid}/tasks/${taskId}/milestone/${milestoneId}/timesheet`)
                 .add({
                     start: admin.firestore.Timestamp.now(),
                     end: null
                 }).then(res => {
-                    console.log(res)
+                    return (res.id)
                 })
 
             await db.doc(`users/${uid}/tasks/${taskId}/milestone/${milestoneId}`)
                 .update({
-                    running: true
+                    running: true,
+                    current: currentTimesheet
                 })
 
             response.send("Sucess")
@@ -129,7 +130,15 @@ app.post('/tasks/milestone/stop', async (request, response) => {
         const uid = request.body.uid
         const taskId = request.body.taskId
         const milestoneId = request.body.milestoneId
-        const timesheetId = request.body.timesheetId
+        const task=await db.doc(`users/${uid}/tasks/${taskId}`)
+                .get().then(doc=>{
+                    if (doc.exists) {
+                        return (doc.data())
+                    } else {
+                        // doc.data() will be undefined in this case
+                        res.status(400).json({ message: "Invalid Request" })
+                    }
+                })
         const milestone = await db.doc(`users/${uid}/tasks/${taskId}/milestone/${milestoneId}`).get()
             .then((doc) => {
                 if (doc.exists) {
@@ -141,7 +150,7 @@ app.post('/tasks/milestone/stop', async (request, response) => {
             })
         if (milestone && milestone.running === true && milestone.complete === false) {
 
-
+            const timesheetId = milestone.current
 
             await db.doc(`users/${uid}/tasks/${taskId}/milestone/${milestoneId}/timesheet/${timesheetId}`)
                 .update({
@@ -160,12 +169,20 @@ app.post('/tasks/milestone/stop', async (request, response) => {
                     }
                 })
 
-            const newTime = milestone.time + (timesheet.end._seconds - timesheet.start._seconds)
+            const newMilestoneTime = milestone.time + (timesheet.end._seconds - timesheet.start._seconds)
             await db.doc(`users/${uid}/tasks/${taskId}/milestone/${milestoneId}`)
                 .update({
                     running: false,
-                    time: Math.floor(newTime)
+                    time: Math.floor(newMilestoneTime),
+                    current: null
                 })
+            const newTaskTime=task.totalTime+(timesheet.end._seconds - timesheet.start._seconds)
+            await db.doc(`users/${uid}/tasks/${taskId}`)
+                .update({
+                    totalTime: Math.floor(newTaskTime)
+                })
+
+                
 
             response.send("Sucess")
 
@@ -185,20 +202,20 @@ app.post('/tasks/milestone/complete', async (request, response) => {
         const taskId = request.body.taskId
         const milestoneId = request.body.milestoneId
         const milestone = await db.doc(`users/${uid}/tasks/${taskId}/milestone/${milestoneId}`).get()
-        .then((doc) => {
-            if (doc.exists) {
-                return (doc.data())
-            } else {
-                // doc.data() will be undefined in this case
-                response.status(400).json({ message: "Invalid Request 193" })
-            }
-        })
-    if (milestone && milestone.running === false && milestone.complete === false) {
+            .then((doc) => {
+                if (doc.exists) {
+                    return (doc.data())
+                } else {
+                    // doc.data() will be undefined in this case
+                    response.status(400).json({ message: "Invalid Request 193" })
+                }
+            })
+        if (milestone && milestone.running === false && milestone.complete === false) {
 
             await db.doc(`users/${uid}/tasks/${taskId}/milestone/${milestoneId}`)
                 .update({
                     complete: true
-                }).catch((res)=>{
+                }).catch((res) => {
                     response.status(400).json({ message: res.message })
                 })
 

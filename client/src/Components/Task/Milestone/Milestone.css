@@ -1,0 +1,8 @@
+.milestone-add{
+    display: flex;
+}
+.milestone-block{
+    display: flex;
+    justify-content: space-between;
+    margin: 0 20px;
+}
