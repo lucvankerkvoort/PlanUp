@@ -3,6 +3,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import googleCalendarPlugin from '@fullcalendar/google-calendar'
 import "./Calender.css";
 import EventModal from './Modal/EventModal'
 import CreateEventModal from './Modal/CreateEventModal'
@@ -35,14 +36,14 @@ const Calender = ({ currentEvents, user,view }) => {
   const handleEventChange = (changedInfo) => {
     eventChange(changedInfo, user)
   }
-
+  
   return (
     <div className="calender-app">
       <CreateEventModal open={open2} user={user} eventAdd={eventAdd} selectedInfo={selectedInfo} setOpen={setOpen2} />
       <EventModal open={open} user={user} selectedEvent={selectedEvent} setOpen={setOpen} />
       <div className="calender-main">
         <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, googleCalendarPlugin]}
           contentHeight={600}
           selectLongPressDelay={1000}
           headerToolbar={{
@@ -50,6 +51,7 @@ const Calender = ({ currentEvents, user,view }) => {
             center: '',
             end: 'today'
           }}
+          googleCalendarApiKey={'AIzaSyD3Mwfhyg0NaWqYCqvnzZWRzyiJKKPtvuM'}
           buttonText={{
             today:    'Today'
           }}
@@ -60,11 +62,12 @@ const Calender = ({ currentEvents, user,view }) => {
           }}
           editable={true}
           selectable={true}
-          fo
           selectMirror={true}
           dayMaxEvents={true}
           weekends={weekendsVisible}
-          events={currentEvents}
+          eventSources={[{googleCalendarId:user.email,editable:false},currentEvents]}
+          eventSourceFailure={err=>console.log(err)}
+          eventSourceSuccess={(content, xhr)=>console.log(content)}
           select={handleDateSelect}
           eventClick={handleEventClick}
           eventChange={handleEventChange}
