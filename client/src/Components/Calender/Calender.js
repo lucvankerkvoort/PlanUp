@@ -51,7 +51,7 @@ const Calender = ({ currentEvents, user,view }) => {
             center: '',
             end: 'today'
           }}
-          googleCalendarApiKey={'AIzaSyD3Mwfhyg0NaWqYCqvnzZWRzyiJKKPtvuM'}
+          googleCalendarApiKey={process.env.REACT_APP_GOOGLE_CALENDER_API}
           buttonText={{
             today:    'Today'
           }}
