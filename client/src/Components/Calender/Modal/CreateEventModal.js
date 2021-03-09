@@ -1,38 +1,12 @@
-import React, { useState } from 'react'
-import { Modal, Button, Radio, TextField } from "@material-ui/core"
+import React, { useEffect, useState } from 'react'
+import { Modal, Button, TextField, Switch, InputLabel} from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
-import { withStyles } from '@material-ui/core/styles';
+import RadioButtons from "../EventInputs/RadioButtons";
+import EventRepeatation from '../EventInputs/EventRepeatation';
+import NonRepEventInputs from '../EventInputs/NonRepEventInputs';
+import RepEventInputs from '../EventInputs/RepEventInputs';
 
 
-
-const RedRadio = withStyles({
-    root: {
-        color: "red",
-        '&$checked': {
-            color: "red",
-        },
-    },
-    checked: {},
-})((props) => <Radio color="default" {...props} />);
-
-const DefaultRadio = withStyles({
-    root: {
-        color: "#3788d8",
-        '&$checked': {
-            color: "#3788d8",
-        },
-    },
-    checked: {},
-})((props) => <Radio color="default" {...props} />);
-const GreenRadio = withStyles({
-    root: {
-      color: 'green',
-      '&$checked': {
-        color: 'green',
-      },
-    },
-    checked: {},
-  })((props) => <Radio color="default" {...props} />);
 
 function getModalStyle() {
     const top = 50;
@@ -54,63 +28,69 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
+const marginTop={
+    marginTop:"10px"
+}
 
 
-const CreateEventModal = ({ open, setOpen, selectedInfo,eventAdd,user }) => {
+
+const CreateEventModal = ({ open, setOpen, selectedInfo, eventAdd, user }) => {
     const classes = useStyles()
     const [modalStyle] = useState(getModalStyle)
     const [title, setTitle] = useState("")
     const [selectedValue, setSelectedValue] = useState('default')
+    const [startStr, setStartStr] = useState(selectedInfo?.startStr);
+    const [endStr, setEndStr] = useState(selectedInfo?.endStr);
+    const [allDay, setAllDay] = useState(selectedInfo?.allDay ? true : false);
+    const [repeat, setRepeat] = useState("Once")
+    const [startTime,setStartTime] = useState("")
+    const [endTime,setEndTime] = useState("")
+    const [startDate,setStartDate] = useState("")
+    const [endDate,setEndDate] = useState("")
 
+    useEffect(() => {
+        setStartStr(selectedInfo?.startStr)
+        setEndStr(selectedInfo?.endStr)
+        setStartTime(selectedInfo?.start?.toTimeString().substring(0,5))
+        setEndTime(selectedInfo?.end?.toTimeString().substring(0,5))
+        setAllDay(selectedInfo?.allDay ? true : false)
+    }, [selectedInfo])
+    
     return (
         <Modal
             open={open}
             onClose={() => {
                 setTitle('')
                 setSelectedValue("default")
-                setOpen(false)}}
+                setOpen(false)
+            }}
         >
             <div style={modalStyle} className={classes.paper}>
                 <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
-
                     <TextField label="Title" style={{ marginBottom: "5px" }} value={title} onChange={e => setTitle(e.target.value)} />
-                    <div style={{display:"flex", alignItems: "center"}}>
-                        <span style={{color:"#"}}>Color:</span>
-                    <DefaultRadio
-                        checked={selectedValue === 'default'}
-                        onChange={(event) => {
-                            setSelectedValue(event.target.value);
-                          }}
-                        value="default"
-                        name="radio-button-demo"
-                        label="Default"
-                    />
-                    <GreenRadio
-                        checked={selectedValue === 'green'}
-                        onChange={(event) => {
-                            setSelectedValue(event.target.value);
-                          }}
-                        value="green"
-                        name="radio-button-demo"
-                        inputProps={{ 'aria-label': 'B' }}
-                        label="Important"
-                    />
-                    <RedRadio
-                        checked={selectedValue === 'red'}
-                        onChange={(event) => {
-                            setSelectedValue(event.target.value);
-                          }}
-                        value="red"
-                        name="radio-button-demo"
-                        inputProps={{ 'aria-label': 'C' }}
-                        label="Urgent"
-                    />
-
+                    <div style={marginTop}>
+                        <InputLabel shrink>Color</InputLabel>
+                        <RadioButtons selectedValue={selectedValue} setSelectedValue={setSelectedValue}/>
                     </div>
-                    <Button color='secondary' disableElevation size='small' variant='contained' onClick={() => {
-                        if(title){
-                            
-                            eventAdd(title,selectedInfo,selectedValue,user)
+                    <div style={marginTop}>
+                        <InputLabel shrink>All Day: </InputLabel>
+                        <Switch checked={allDay} onChange={() => setAllDay(prevState => !prevState)} />
+                    </div>
+                    <div style={marginTop}>
+                        <EventRepeatation repeat={repeat} setRepeat={setRepeat}/>
+                    </div>
+
+                    {repeat==="Once"?
+                    <div style={marginTop}>
+                        <NonRepEventInputs endStr={endStr} startStr={startStr} setEndStr={setEndStr} setStartStr={setStartStr}/>
+                    </div>:
+                    <div>
+                        <RepEventInputs values={{startTime,endTime,startDate,endDate}} setValues={{setStartTime,setEndTime,setStartDate,setEndDate}}/>
+                    </div>
+                        }
+                    <Button color='secondary' style={marginTop} disableElevation size='small' variant='contained' onClick={() => {
+                        if (title) {
+                            eventAdd(repeat,{ title, startStr, endStr, color: selectedValue, allDay,startTime,endTime,startDate,endDate }, user)
                             setOpen(false)
                             setSelectedValue("default")
                             setTitle('')

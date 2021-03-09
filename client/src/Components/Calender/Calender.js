@@ -19,7 +19,6 @@ const Calender = ({ currentEvents, user,view }) => {
   const [open2, setOpen2] = useState(false);
 
   const handleDateSelect = (selectInfo) => {
-
     setOpen2(true)
     let calendarApi = selectInfo.view.calendar
     setSelectedInfo(selectInfo)
@@ -65,7 +64,8 @@ const Calender = ({ currentEvents, user,view }) => {
           selectMirror={true}
           dayMaxEvents={true}
           weekends={weekendsVisible}
-          eventSources={[{googleCalendarId:user.email,editable:false},currentEvents]}
+          events={[...currentEvents]}
+          //eventSources={[{googleCalendarId:user.email,editable:false},currentEvents]}
           eventSourceFailure={err=>console.log(err)}
           eventSourceSuccess={(content, xhr)=>console.log(content)}
           select={handleDateSelect}
