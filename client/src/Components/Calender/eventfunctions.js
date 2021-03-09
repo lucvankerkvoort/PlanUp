@@ -18,10 +18,9 @@ const getEventObject=(repeat,selectInfo)=>{
         startTime: selectInfo.startTime,
         endTime: selectInfo.endTime,
         startRecur : selectInfo.startDate,
-        endRecur: selectInfo.endTime,
+        endRecur: selectInfo.endDate,
         backgroundColor:selectInfo.color,
         borderColor:selectInfo.color,
-        allDay:selectInfo.allDay,
       }
     }
     case 'Weekdays':{
@@ -30,10 +29,9 @@ const getEventObject=(repeat,selectInfo)=>{
         startTime: selectInfo.startTime,
         endTime: selectInfo.endTime,
         startRecur : selectInfo.startDate,
-        endRecur: selectInfo.endTime,
+        endRecur: selectInfo.endDate,
         backgroundColor:selectInfo.color,
         borderColor:selectInfo.color,
-        allDay:selectInfo.allDay,
         daysOfWeek:[1,2,3,4,5]
       }
     }
@@ -43,10 +41,9 @@ const getEventObject=(repeat,selectInfo)=>{
         startTime: selectInfo.startTime,
         endTime: selectInfo.endTime,
         startRecur : selectInfo.startDate,
-        endRecur: selectInfo.endTime,
+        endRecur: selectInfo.endDate,
         backgroundColor:selectInfo.color,
         borderColor:selectInfo.color,
-        allDay:selectInfo.allDay,
         daysOfWeek:[0,6]
       }
     }
