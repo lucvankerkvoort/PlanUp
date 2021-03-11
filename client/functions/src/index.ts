@@ -218,10 +218,51 @@ app.post("/tasks/milestone/complete", async (request, response) => {
             .doc(`${milestoneId}`)
                 .update({
                     complete: true,
+                    completedAt: admin.firestore.Timestamp.now(),
                }).catch((res) => {
                     response.status(400).json({message: res.message});
                });
             response.send("Sucess");
+       } else {
+            response.status(400).json({message: "Invalid Request"});
+       }
+   } catch (err) {
+        response.status(400).json({message: err.message});
+   }
+});
+
+// Resuming a milestone
+app.post("/tasks/milestone/resume", async (request, response) => {
+    try {
+        const uid = request.body.uid;
+        const taskId = request.body.taskId;
+        const milestoneId = request.body.milestoneId;
+        const milestone = await
+        db.doc(`users/${uid}/tasks/${taskId}/milestone/${milestoneId}`).get()
+            .then((doc) => {
+                if (doc.exists) {
+                    return (doc.data());
+               } else {
+                    // doc.data() will be undefined in this case
+                    return (null);
+               }
+           });
+        if (milestone && milestone.running === false &&
+            milestone.complete === true ) {
+            const timeDiff=(admin.firestore.Timestamp.now().seconds)-
+            (milestone.completedAt._seconds);
+            if (timeDiff>-1 && timeDiff<=86400) {
+                await db.collection(`users/${uid}/tasks/${taskId}/milestone`)
+                .doc(`${milestoneId}`)
+                    .update({
+                        complete: false,
+                   }).catch((res) => {
+                        response.status(400).json({message: res.message});
+                   });
+                response.send("Sucess");
+            } else {
+                response.status(400).json({message: "24 hours passed"});
+            }
        } else {
             response.status(400).json({message: "Invalid Request"});
        }
