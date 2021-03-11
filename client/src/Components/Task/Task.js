@@ -71,7 +71,7 @@ const Task = ({ user, tasks }) => {
                 </div>
                 <div className="milestone-add">
                     <Input value={milestoneTitle} onChange={e => setMilestoneTitle(e.target.value)} placeholder="Title" type="text" />
-                    <Input value={milestoneStart} onChange={e => setMilestoneStart(e.target.value)} type="datetime-local" placeholder="Start" />
+                    <Input value={'2021-03-09T03:30'} onChange={e => setMilestoneStart(e.target.value)} type="datetime-local" placeholder="Start" />
                     <Input value={milestoneEnd} onChange={e => setMilestoneEnd(e.target.value)} type="datetime-local" placeholder="End" />
                     <Button color='primary' disableElevation size='small' variant='contained' disabled={processing} onClick={handleAddMilestone}>Add Milestone</Button>
                 </div>

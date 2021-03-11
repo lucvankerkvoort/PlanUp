@@ -1,30 +1,72 @@
 import {db} from '../../firebase'
 
-export const eventAdd=(title,selectInfo,color,user)=>{
-    db.collection('users')
-    .doc(user.uid)
-    .collection('events')
-    .add({
-        title,
+
+const getEventObject=(repeat,selectInfo)=>{
+  switch(repeat){
+    case 'Once':
+      return {
+        title: selectInfo.title,
         start: selectInfo.startStr,
         end: selectInfo.endStr,
         allDay: selectInfo.allDay,
-        backgroundColor:color,
-        borderColor:color
-    }).then(
+        backgroundColor:selectInfo.color,
+        borderColor:selectInfo.color
+    }
+    case 'Daily':{
+      return {
+        title: selectInfo.title,
+        startTime: selectInfo.startTime,
+        endTime: selectInfo.endTime,
+        startRecur : selectInfo.startDate,
+        endRecur: selectInfo.endDate,
+        backgroundColor:selectInfo.color,
+        borderColor:selectInfo.color,
+      }
+    }
+    case 'Weekdays':{
+      return {
+        title: selectInfo.title,
+        startTime: selectInfo.startTime,
+        endTime: selectInfo.endTime,
+        startRecur : selectInfo.startDate,
+        endRecur: selectInfo.endDate,
+        backgroundColor:selectInfo.color,
+        borderColor:selectInfo.color,
+        daysOfWeek:[1,2,3,4,5]
+      }
+    }
+    case 'Weekends':{
+      return {
+        title: selectInfo.title,
+        startTime: selectInfo.startTime,
+        endTime: selectInfo.endTime,
+        startRecur : selectInfo.startDate,
+        endRecur: selectInfo.endDate,
+        backgroundColor:selectInfo.color,
+        borderColor:selectInfo.color,
+        daysOfWeek:[0,6]
+      }
+    }
+    default:{
+        return {}
+    }
+  }
+}
+
+export const eventAdd=(repeat,selectInfo,user)=>{
+    const eventObject=getEventObject(repeat,selectInfo);
+    
+    db.collection('users')
+    .doc(user.uid)
+    .collection('events')
+    .add(eventObject).then(
       res=>{
         db.collection('users')
         .doc(user.uid)
         .collection('events')    
         .doc(res.id)
-        .set({
+        .update({
           id:res.id,
-          title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay,
-        backgroundColor:color,
-        borderColor:color
         })
       }
     )
@@ -35,14 +77,10 @@ export const eventChange=(changedInfo,user)=>{
     .doc(user.uid)
     .collection('events')
     .doc(changedInfo.event.id)
-    .set({
-            id:changedInfo.event.id,
-            title:changedInfo.event.title,
+    .update({
             start: changedInfo.event.startStr,
             end: changedInfo.event.endStr,
             allDay: changedInfo.event.allDay,
-            backgroundColor:changedInfo.event.backgroundColor,
-            borderColor:changedInfo.event.borderColor
           })
 }
 
